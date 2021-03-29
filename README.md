@@ -1,1 +1,1 @@
-# norma
+# norma - our machine learning
