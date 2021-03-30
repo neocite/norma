@@ -14,12 +14,6 @@ headlines = pd.read_csv(join('data', 'manxetes.csv'), delimiter=";")
 regressao_logistica = LogisticRegression()
 
 
-class Classificacao:
-    def __init__(self, score, category_id):
-        self.score = score
-        self.category_id = category_id
-
-
 def classificar_texto(vetorizar, texto, coluna_texto, coluna_classificacao, text_predicao):
     bag_of_words = vetorizar.fit_transform(texto[coluna_texto])
     predict_bag_of_words = vetorizar.transform([text_predicao]).toarray()
@@ -31,9 +25,10 @@ def classificar_texto(vetorizar, texto, coluna_texto, coluna_classificacao, text
     acuracia = regressao_logistica.score(teste, classe_test)
     predicao = regressao_logistica.predict(predict_bag_of_words)
 
-    classificacao = Classificacao(acuracia, predicao)
-
-    return classificacao
+    return {
+        "score": round(acuracia, 4)*100,
+        "category_id": int(predicao[0])
+    }
 
 
 def remove_palavras_irrelevantes(dataframe, coluna_texto):
@@ -74,10 +69,6 @@ def remove_acentos(dataframe, coluna_texto):
     frase_processada = [unidecode.unidecode(
         texto.lower()) for texto in dataframe[coluna_texto]]
     return frase_processada
-
-
-def download_nltk():
-    nltk.download("all")
 
 
 def classify(predict_text):
